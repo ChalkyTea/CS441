@@ -96,16 +96,16 @@ class NetworkInterface:
       Returns assigned IP address and MAC of device.
     '''
     print(f"Node connection request received.")
-    print(f"Assigning free IP address... [1/3]")
+    print(f"Assigning free IP address")
     assigned_ip_address, _ = self.provide_node_connection_data(corresponding_socket)
 
-    print(f"Requesting MAC address... [2/3]")
+    print(f"Requesting MAC address")
     response_mac_address = self.request_mac_address(corresponding_socket)
 
-    print(f"Updating ARP tables... [3/3]")
+    print(f"Updating ARP tables")
     self.arp_table.update_arp_table(assigned_ip_address, response_mac_address, corresponding_socket)
 
-    print(f"Connection established. [Completed]")
+    print(f"Connection established")
     print_brk()
     return assigned_ip_address, response_mac_address
 
@@ -114,7 +114,7 @@ class NetworkInterface:
       Emulates effect of ethernet broadcast of payload through socket unicast.
       If is_broadcast_channel is True, every node of the broadcast is a destination (allows decoding without sniffing).
     '''
-    print("Broadcasting ethernet frame to connected MACs...")
+    print("Broadcasting ethernet frame to connected MACs")
     arp_records = self.arp_table.get_all_arp_records()
     for arp_record in arp_records:
       if is_broadcast_channel:
@@ -128,11 +128,11 @@ class NetworkInterface:
       1. Checks if IP packet has the same prefix as current LAN (broadcast within same LAN)
       2. If different, checks if same prefix with LANs within conencted interfaces (valid_ips would have one result)
     '''
-    print("Checking IP packet destination... [1/2]")
+    print("Checking IP packet destination")
     ip_prefix = ip_packet.dest_ip_prefix()
     
     if ip_prefix == self.network_int_ip_prefix:
-      print("Broadcasting encapsulated IP packets to connected nodes... [2/2]")
+      print("Broadcasting encapsulated IP packets to connected nodes")
       dest_mac = None
       is_broadcast_channel = ip_packet.is_broadcast_address()
       if not is_broadcast_channel:
@@ -142,15 +142,15 @@ class NetworkInterface:
 
     else:
       print("Destination not in LAN.")
-      print("Routing packet to LAN with destination prefix... [2/2]")
+      print("Routing packet to LAN with destination prefix")
       next_hop_prefix = self.routing_table.get_next_hop_prefix(ip_prefix)
       if next_hop_prefix:
         corresponding_socket = self.network_int_arp_table.get_corresponding_socket_from_prefix(next_hop_prefix)
         corresponding_socket.send(bytes(ip_packet.dumps(), "utf-8"))
-        print("IP packet routed. [Completed]")
+        print("IP packet routed")
       else:
-        print("Failed to locate next hop...")
-        print("Failed to route IP packet. [Fail]")
+        print("Failed to locate next hop")
+        print("Failed to route IP packet")
 
   def handle_ethernet_frame(self, ethernet_frame: EthernetFrame, corresponding_socket: socket.socket) -> None:
     # Checks whether frame is query reply, if yes, update ARP table
@@ -187,18 +187,18 @@ class NetworkInterface:
 
       if ip_packet.protocol == PROTOCOL["ROUTE_ADD"]:
         print("New route received.")
-        print(f"Adding new route to routing table... [1/2]")
+        print(f"Adding new route to routing table")
         update_prefix, cost, exclusion_ips = ip_packet.get_route_add_data()
         self.routing_table.extend_entry(ip_packet.source[:3], update_prefix, int(cost))
-        print("Broadcasting path to neighbouring interfaces... [2/2]")
+        print("Broadcasting path to neighbouring interfaces")
         self.broadcast_route_add(update_prefix, int(cost), exclusion_ips)
         print("Routing table updated. [Success]")
       
       elif ip_packet.protocol == PROTOCOL["ROUTE_REMOVE"]:
-        print(f"Removing new route to routing table... [1/2]")
+        print(f"Removing new route to routing table")
         update_prefix, exclusion_ips = ip_packet.get_route_remove_data()
         self.routing_table.remove_entire_entry(update_prefix)
-        print("Broadcasting removal to neighbouring interfaces... [2/2]")
+        print("Broadcasting removal to neighbouring interfaces")
         self.broadcast_route_remove(update_prefix, exclusion_ips)
         print("Routing table updated. [Success]")
 
@@ -215,16 +215,16 @@ class NetworkInterface:
         data = corresponding_socket.recv(1024)
         if not data:
           print(f"Connection terminated from IP address of {ip_address} and MAC of {mac_address}.")
-          print(f"Closing corresponding connections... [1/2]")
+          print(f"Closing corresponding connections")
           if config_address and config_address in self.network_int_relay_addresses:
             self.failed_network_relays.append(config_address)
           corresponding_socket.close()
-          print(f"Unassigning IP address from ARP and routing tables... [2/2]")
+          print(f"Unassigning IP address from ARP and routing tables")
           self.destroy_arp_connections(ip_address, mac_address)
           if (ip_address[:3] != self.network_int_ip_prefix):
             self.routing_table.remove_entire_entry(ip_address[:3])
             self.broadcast_route_remove(ip_address[:3], [])
-          print(f"Connection to {mac_address} terminated. [Completed]")
+          print(f"Connection to {mac_address} terminated")
           print_brk()
           return # End thread
 
@@ -249,16 +249,16 @@ class NetworkInterface:
         # Raise exception here when node connection closes
         # For windows OS
         print(f"Connection terminated from IP address of {ip_address} and MAC of {mac_address}.")
-        print(f"Closing corresponding connections... [1/2]")
+        print(f"Closing corresponding connections")
         corresponding_socket.close()
         if config_address and config_address in self.network_int_relay_addresses:
           self.failed_network_relays.append(config_address)
-        print(f"Unassigning IP address from ARP and routing tables... [2/2]")
+        print(f"Unassigning IP address from ARP and routing tables")
         self.destroy_arp_connections(ip_address, mac_address)
         if (ip_address[:3] != self.network_int_ip_prefix):
           self.routing_table.remove_entire_entry(ip_address[:3])
           self.broadcast_route_remove(ip_address[:3], [])
-        print(f"Connection to {mac_address} terminated. [Completed]")
+        print(f"Connection to {mac_address} terminated")
         print_brk()
         return # End thread
 
@@ -311,9 +311,9 @@ class NetworkInterface:
       if not data:
         print_brk()
         print("Connection from network interface terminated prematurely.") # Network interface connection ends before ARP established
-        print(f"Closing corresponding connections... [1/2]")
+        print(f"Closing corresponding connections")
         corresponding_socket.close()
-        print(f"Unassigning IP address from ARP tables... [2/2]")
+        print(f"Unassigning IP address from ARP tables")
         if corresponding_ip_address:
           self.destroy_arp_connections(corresponding_ip_address)
           self.routing_table.remove_entire_entry(corresponding_ip_address[:3])
@@ -324,17 +324,17 @@ class NetworkInterface:
 
       message = data.decode('utf-8')
       if (message == "provide_network_int_connection_data"):
-        print(f"Receiving connection interface's IP address, MAC and routing dumps... [1/3]")
+        print(f"Receiving connection interface's IP address, MAC and routing dumps")
         corresponding_ip_address, corresponding_mac_address, routing_table_dump = self.receive_network_int_connection_data(corresponding_socket)
 
       elif (message == "request_network_int_connecting_data"):
-        print(f"Providing connecting data... [2/3]")
+        print(f"Providing connecting data")
         data_provided = self.provide_network_int_connecting_data(corresponding_socket, is_reconnection)
     
-    print(f"Updating ARP and routing tables... [3/3]")
+    print(f"Updating ARP and routing tables")
     self.network_int_arp_table.update_arp_table(corresponding_ip_address, corresponding_mac_address, corresponding_socket)
     self.routing_table.loads(self.network_int_ip_prefix, corresponding_ip_address[:3], routing_table_dump)
-    print(f"Connected to network interface. [Completed]")
+    print(f"Connected to network interface")
     print_brk()
     return corresponding_ip_address, corresponding_mac_address
   

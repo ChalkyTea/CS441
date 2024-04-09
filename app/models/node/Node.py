@@ -19,6 +19,8 @@ from models.constants import PROTOCOL
 from models.util import print_brk, print_node_help, print_command_not_found, print_error, input_ip_sequence, is_valid_domain_name
 from config import HOST
 
+
+
 class Node:
   device_name = None
   node_ip_address = None # Assigned by router  - See NetworkInterface.receive_node_connection_data()
@@ -56,6 +58,24 @@ class Node:
     #self.dns_table = DNSTable(dns_records)
     self.dns_server_prefix = dns_server_prefix
     #self.malicious_dns_table = DNSTable(malicious_dns_records)
+
+  def create_icmp_packet(self, dest_ip: str) -> IPPacket:
+      # Create an ICMP echo request packet
+      icmp_data = {
+          "type": PROTOCOL["ICMP_TYPE_ECHO_REQUEST"],
+          "code": 0,  # Assuming code is 0 for echo request
+          # Other ICMP data fields as needed
+          "identifier": 1234,  # Identifier to match requests with replies
+          "sequence_number": 1,  # Sequence number for distinguishing requests
+          "checksum": 0,  # Placeholder for checksum calculation
+          "timestamp": 1234567890,  # Timestamp indicating when packet was sent
+          "data": "Hello, world!"
+      }
+
+      # Construct the ICMP packet with the destination IP address and ICMP data
+      icmp_packet = IPPacket(self.node_ip_address, dest_ip, PROTOCOL["ICMP"], icmp_data)
+
+      return icmp_packet
 
   def receive_node_connection_data(self):
     print("Waiting for node connection data")
@@ -107,6 +127,21 @@ class Node:
     if ethernet_frame.is_recipient(self.node_mac):
       print("Intended recipient, retrieving data...")
 
+      # if ethernet_frame.data.protocol and ethernet_frame.data.protocol[0] == PROTOCOL["ICMP"]:
+      #           icmp_data = json.loads(ethernet_frame.data.data)
+      #           icmp_type = icmp_data.get('type')
+      #           if icmp_type == '8':  # ICMP echo request
+      #               print("Received ICMP echo request")
+      #               # Prepare and send ICMP echo reply
+      #               icmp_reply_data = {
+      #                   'type': '0',  # ICMP type for echo reply
+      #                   'code': '0',
+      #                   # Other ICMP echo reply data fields as needed
+      #               }
+      #               icmp_reply_packet = IPPacket(ethernet_frame.data.dest_ip, ethernet_frame.data.src_ip, PROTOCOL["ICMP"], icmp_reply_data)
+      #               self.send_ip_packet(icmp_reply_packet, corresponding_socket, has_bottom_break=False)
+      #               return
+
       if ethernet_frame.data.protocol and ethernet_frame.data.protocol[0] == PROTOCOL["PING"]:
         self.ping_protocol.handle_ping(ethernet_frame, corresponding_socket)
 
@@ -154,7 +189,7 @@ class Node:
       print(f"Ethernet frame data: {sniffed_data}")
 
     else:
-      print("Unintended recipient.")
+      print("\n")
 
   def listen(self):
     while True:
@@ -204,6 +239,11 @@ class Node:
     ip_packet = IPPacket(self.dns_server_prefix + "F", self.node_ip_address, PROTOCOL["DNS_QUERY"], address)
     self.send_ip_packet(ip_packet, self.network_int_socket)
     print(f"DNS query sent to DNS server at prefix {self.dns_server_prefix}.")
+
+    # Construct the ICMP packet with the destination IP address and ICMP data
+    icmp_packet = IPPacket(self.node_ip_address, dest_ip, PROTOCOL["ICMP"], icmp_data)
+
+    return icmp_packet
 
   
   # def handle_dns_response(self, ethernet_frame: EthernetFrame) -> str:
@@ -271,6 +311,17 @@ class Node:
 
       elif node_input == "help" or node_input == "h":
         print_node_help()
+
+      elif node_input == "icmp":
+            print("Create an ICMP packet by entering the destination IP address...")
+            dest_ip = input("Enter destination IP address:\n> ")
+            if dest_ip:
+                icmp_packet = self.create_icmp_packet(dest_ip)
+                self.send_ip_packet(icmp_packet, self.network_int_socket)
+            else:
+                print_error()
+
+      
 
       elif node_input == "eth":
         payload = EthernetFrame.input_sequence(self.node_mac).dumps()

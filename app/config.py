@@ -64,76 +64,22 @@ NODE3_CONFIG = {
   ]
 }
 
-ROUTER_INT3_CONFIG = {
-  "device_name": "Router",
-  "network_int_ip_address": "0x31",
-  "router_interface_address": "R3",
-  "network_int_port": ROUTER_INT3_PORT,
-  "max_connections": 5,
-  "network_int_relay_addresses": [(HOST, ROUTER_INT1_PORT), (HOST, ROUTER_INT2_PORT)],
-}
 
-DNS_SERVER_CONFIG = {
-  "device_name": "DNS Server",
-  "node_mac": "N4",
-  "router_interface_address": "R3", 
-  "network_int_port": ROUTER_INT3_PORT,
-  "dns_records": [
-    {
-      "domain_name": "N1.com",
-      "ip_address": "0x1A"
-    }, {
-      "domain_name": "www.N2.com",
-      "ip_address": "0x2A"
-    }, {
-      "domain_name": "N3.com",
-      "ip_address": "0x2B"
-    }
-  ]
-}
-
-ROUTER_INT4_CONFIG = {
-  "device_name": "Router",
-  "network_int_ip_address": "0x41",
-  "router_interface_address": "R4",
-  "network_int_port": ROUTER_INT4_PORT,
-  "max_connections": 5,
-  "network_int_relay_addresses": [(HOST, ROUTER_INT1_PORT), (HOST, ROUTER_INT2_PORT), (HOST, ROUTER_INT3_PORT)],
-}
-
-VPN_SERVER_CONFIG = {
-  "device_name": "VPN Server",
-  "network_int_ip_address": "0x51",
-  "router_interface_address": "V1",
-  "network_int_port": VPN_SERVER_PORT,
-  "max_connections": 5,
-  "vpn_target_address": "0x7A",
-  "network_int_relay_addresses": [(HOST, ROUTER_INT4_PORT)],
-}
-
-ROUTER_INT5_CONFIG = {
-  "device_name": "Router",
-  "network_int_ip_address": "0x61",
-  "router_interface_address": "R5",
-  "network_int_port": ROUTER_INT5_PORT,
-  "max_connections": 5,
-  "network_int_relay_addresses": [(HOST, ROUTER_INT1_PORT), (HOST, ROUTER_INT2_PORT), (HOST, ROUTER_INT3_PORT), (HOST, ROUTER_INT4_PORT)],
-}
-
-PROTECTED_SERVER_CONFIG = {
-  "device_name": "Protected Server",
-  "network_int_ip_address": "0x71",
-  "router_interface_address": "P1",
-  "network_int_port": PROTECTED_SERVER_PORT,
-  "max_connections": 5,
-  "network_int_relay_addresses": [(HOST, VPN_SERVER_PORT), (HOST, ROUTER_INT5_PORT)],
-  "whitelist": ["0x51"]
-}
-
-PROTECTED_NODE_CONFIG = {
-  "device_name": "Protected Node",
-  "node_mac": "P2",
-  "router_interface_address": "P1", 
-  "network_int_port": PROTECTED_SERVER_PORT,
-  "dns_server_prefix": DNS_SERVER_PREFIX
-}
+# DNS_SERVER_CONFIG = {
+#   "device_name": "DNS Server",
+#   "node_mac": "N4",
+#   "router_interface_address": "R3", 
+#   "network_int_port": ROUTER_INT3_PORT,
+#   "dns_records": [
+#     {
+#       "domain_name": "N1.com",
+#       "ip_address": "0x1A"
+#     }, {
+#       "domain_name": "www.N2.com",
+#       "ip_address": "0x2A"
+#     }, {
+#       "domain_name": "N3.com",
+#       "ip_address": "0x2B"
+#     }
+#   ]
+# }

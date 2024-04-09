@@ -111,7 +111,7 @@ class IPPacket:
       Initiates sequence to create IPPacket object.
     '''
     print_brk()
-    protocol = input("Enter protocol...\n- 0 \t Ping protocol\n- 1 \t Log protocol\n- 2 \t Kill protocol\n> ")
+    protocol = input("Enter protocol...\n- 0 \t ICMP protocol\n- 1 \t Log protocol\n- 2 \t Kill protocol\n> ")
     while not (protocol.isdigit()) or not (int(protocol) in range(3)):
       protocol = input("Invalid protocol, please enter protocol again...\n- 0 \t Ping protocol\n- 1 \t Log protocol\n- 2 \t Kill protocol\n> ")
     

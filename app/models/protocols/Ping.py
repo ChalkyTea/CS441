@@ -22,7 +22,7 @@ class Ping:
     ethernet_data: EthernetData = ethernet_frame.data
     
     if (ethernet_data.protocol == "0r" and self.ping_sent): 
-      print(f"Ping response data: {ethernet_data.data} [Success]")
+      print(f"ICMP response data: {ethernet_data.data} [Success]")
       self.ping_received = True
 
     elif (ethernet_data.protocol == "0r" and not self.ping_sent):
