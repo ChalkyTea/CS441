@@ -11,12 +11,12 @@ class EthernetFrame:
 
   def __init__(
     self,
-    dest_mac: str,
-    src_mac: str,
+    destination_Mac_Address: str,
+    source_Mac_Address: str,
     data: str
   ):
-    self.destination = dest_mac
-    self.source = src_mac
+    self.destination = destination_Mac_Address
+    self.source = source_Mac_Address
     self.data_length = len(data)
     self.data = EthernetData(data)
   
