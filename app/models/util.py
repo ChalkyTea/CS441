@@ -29,19 +29,13 @@ def print_node_help(has_top_break: bool = True):
     print_brk()
 
   print("Commands:")
-  print("- (q)uit \t Terminate node.")
-  print("- (h)elp \t Display command menu.")
-  print("- eth \t\t Create an ethernet packet.")
-  print("- icmp \t\t Create an icmp packet.")
-  print("- ip \t\t Create an IP packet.")
-  print("- dns \t\t Display all DNS records.")
-  print("- arp \t\t Display all ARP tables.")
-  print("- reply \t Reply ARP broadcast query.")
-  print("- firewall \t Read or configure firewall options.")
-  print("- kill \t\t Configure kill protocol options.")
+  print("- eth \t\t Create an ethernet packet to send.")
+  print("- ip \t\t Create an IP packet to send.")
+  print("- arp \t\t Display ARP tables.")
+  print("- firewall \t Read and/or configure firewall options.")
   print("- sniff \t Configure sniffing functionality.")
-  print("- spoof \t Spoof your IP address.")
-  print("- whoami \t Bring up current ip and mac address.")
+  print("- spoof \t IP Address Spoofing.")
+  print("- whoami \t Shows your current ip and mac address.")
   print_brk()
 
 def print_network_int_help(has_top_break: bool = True):
@@ -49,45 +43,44 @@ def print_network_int_help(has_top_break: bool = True):
     print_brk()
 
   print("Commands:")
-  print("- (q)uit \t Terminate network interface.")
-  print("- (h)elp \t Display command menu.")
-  print("- reconnect \t Attempt to reconnect to failed connections during start up.")
-  print("- ip route \t Display all routing tables.")
+  print("- quit \t Terminate network interface.")
+  print("- help \t Display command menu.")
+  # print("- reconnect \t Attempt to reconnect to failed connections during start up.")
+  # print("- ip route \t Display all routing tables.")
   print("- arp \t\t Display all ARP tables.")
   print("- arp -n \t Display ARP tables with connected nodes.")
   print("- arp -r \t Display ARP tables with connected network interfaces.")
-  print("- whoami \t Bring up current ip and mac address.")
-  print("- broadcast \t Broadcast an ARP query")
+  print("- whoami \t Shows your current ip and mac address.")
   print_brk()
 
-def print_dns_help(has_top_break: bool = True):
-  if has_top_break:
-    print_brk()
+# def print_dns_help(has_top_break: bool = True):
+#   if has_top_break:
+#     print_brk()
 
-  print("Commands:")
-  print("- (q)uit \t Terminate DNS.")
-  print("- (h)elp \t Display command menu.")
-  print("- dns \t\t Display all DNS records.")
-  print("- arp \t\t Display all ARP tables.")
-  print("- whoami \t Bring up current ip and mac address.")
-  print_brk()
+#   print("Commands:")
+#   print("- (q)uit \t Terminate DNS.")
+#   print("- (h)elp \t Display command menu.")
+#   print("- dns \t\t Display all DNS records.")
+#   print("- arp \t\t Display all ARP tables.")
+#   print("- whoami \t Bring up current ip and mac address.")
+#   print_brk()
 
-def print_server_help(has_top_break: bool = True):
-  if has_top_break:
-    print_brk()
+# def print_server_help(has_top_break: bool = True):
+#   if has_top_break:
+#     print_brk()
 
-  print("Commands:")
-  print("- (q)uit \t Terminate network interface.")
-  print("- (h)elp \t Display command menu.")
-  print("- reconnect \t Attempt to reconnect to failed connections during start up.")
-  print("- ip route \t Display all routing tables.")
-  print("- arp \t\t Display all ARP tables.")
-  print("- arp -n \t Display ARP tables with connected nodes.")
-  print("- arp -r \t Display ARP tables with connected network interfaces.")
-  print("- firewall \t Read or configure firewall options.")
-  print("- whoami \t Bring up current ip and mac address.")
-  print("- broadcast \t Broadcast an ARP query")
-  print_brk()
+#   print("Commands:")
+#   print("- (q)uit \t Terminate network interface.")
+#   print("- (h)elp \t Display command menu.")
+#   print("- reconnect \t Attempt to reconnect to failed connections during start up.")
+#   print("- ip route \t Display all routing tables.")
+#   print("- arp \t\t Display all ARP tables.")
+#   print("- arp -n \t Display ARP tables with connected nodes.")
+#   print("- arp -r \t Display ARP tables with connected network interfaces.")
+#   print("- firewall \t Read or configure firewall options.")
+#   print("- whoami \t Bring up current ip and mac address.")
+#   print("- broadcast \t Broadcast an ARP query")
+#   print_brk()
 
 def print_command_not_found(device: Literal["node", "network_interface"]):
   print_brk()
@@ -96,10 +89,10 @@ def print_command_not_found(device: Literal["node", "network_interface"]):
     print_node_help(has_top_break = False)
   elif device == "network_interface":
     print_network_int_help(has_top_break = False)
-  elif device == "dns":
-    print_dns_help(has_top_break = False)
-  elif device == "server":
-    print_server_help(has_top_break = False)
+  # elif device == "dns":
+  #   print_dns_help(has_top_break = False)
+  # elif device == "server":
+  #   print_server_help(has_top_break = False)
 
 def print_error(has_top_break: bool = True):
   if has_top_break:
