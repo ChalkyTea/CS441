@@ -1,7 +1,7 @@
 class EthernetData:
 
-  dest_ip: str = None
-  src_ip: str = None
+  destination_ip: str = None
+  source_ip: str = None
   protocol: str = None
   data: str = None
 
@@ -11,8 +11,9 @@ class EthernetData:
   ):
     data_segments = data.split("-") 
     if len(data_segments) == 4:
-      self.dest_ip = data_segments[0]
-      self.src_ip = data_segments[1]
+
+      self.destination_ip = data_segments[0]
+      self.source_ip = data_segments[1]
       self.protocol = data_segments[2]
       self.data = data_segments[3]
     
@@ -20,4 +21,4 @@ class EthernetData:
       self.data = data
   
   def dumps(self) -> str:
-    return f"{self.dest_ip}-{self.src_ip}-{self.protocol}-{self.data}"
+    return f"{self.destination_ip}-{self.source_ip}-{self.protocol}-{self.data}"

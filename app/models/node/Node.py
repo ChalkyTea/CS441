@@ -347,13 +347,13 @@ class Node:
         self.arp_table.pprint()
         print_brk()
 
-      elif node_input == "dns":
-        print("Displaying all local DNS records...")
-        self.dns_table.pprint()
-        # if bool(self.malicious_dns_table.resolution_table):
-        #   print("Displaying malicious DNS records...")
-        #   self.malicious_dns_table.pprint()
-        print_brk()
+      # elif node_input == "dns":
+      #   print("Displaying all local DNS records...")
+      #   self.dns_table.pprint()
+      #   # if bool(self.malicious_dns_table.resolution_table):
+      #   #   print("Displaying malicious DNS records...")
+      #   #   self.malicious_dns_table.pprint()
+      #   print_brk()
 
       elif node_input == "reply":
         print_brk()

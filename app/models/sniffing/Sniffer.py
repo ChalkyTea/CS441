@@ -44,9 +44,9 @@ class Sniffer:
       print_brk()
 
     print("Commands to configure sniffer:")
-    print("- Status \t\t Shows if sniffing has been activated.")
-    print("- Disable \t\t Disable sniffing.")
-    print("- Enable \t\t Enable sniffing.")
+    print("- status \t\t Shows if sniffing has been activated.")
+    print("- disable \t\t Disable sniffing.")
+    print("- enable \t\t Enable sniffing.")
     print("- enablespoofing \t Enable DNS spoofing.")
     print("- disablespoofing \t Disable DNS spoofing.")
     print_brk()

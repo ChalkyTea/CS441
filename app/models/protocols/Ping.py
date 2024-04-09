@@ -14,7 +14,7 @@ class Ping:
   ping_sent = False
   ping_received = False
 
-  def handle_ping(self, ethernet_frame: EthernetFrame, corresponding_socket: socket.socket):
+  def handle_ping(self, ethernet_frame: EthernetFrame, socket: socket.socket):
     '''
       Handles received ethernet data.
       If data received is a response to the original ping, print data, else, send a response.
@@ -36,16 +36,16 @@ class Ping:
         protocol = "0r",
         data = ethernet_data.data
       )
-      corresponding_socket.send(bytes(ip_packet.dumps() , "utf-8"))
+      socket.send(bytes(ip_packet.dumps() , "utf-8"))
       print(f"Data ({ethernet_data.data}) echoed.")
   
-  def ping(self, ip_packet: IPPacket, corresponding_socket: socket.socket, max_pings: int = 5):
+  def ping(self, ip_packet: IPPacket, socket: socket.socket, max_pings: int = 5):
     self.ping_sent = True
     sent_pings = 0
 
     while not (self.ping_received) and not (sent_pings == max_pings):
       print(f"Pinging {ip_packet.destination} with {ip_packet.data_length} bytes of data...")
-      corresponding_socket.send((bytes(ip_packet.dumps(), "utf-8")))
+      socket.send((bytes(ip_packet.dumps(), "utf-8")))
       sent_pings += 1
       time.sleep(1)
 
