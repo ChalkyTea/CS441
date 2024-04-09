@@ -37,8 +37,8 @@ class EthernetFrame:
   def input_sequence(src_mac: str) -> EthernetFrame:
     print_brk()
     print("Create an ethernet frame by entering the following information into the console.")
-    dest_mac = input("Enter destination MAC address\n> ")
-    payload = input("Enter message\n> ")
+    dest_mac = input("Enter destination MAC address:\n> ")
+    payload = input("Enter message:\n> ")
     ethernet_frame = EthernetFrame(dest_mac, src_mac, payload)
     ethernet_frame.data.protocol = PROTOCOL["ETH"]
     return ethernet_frame

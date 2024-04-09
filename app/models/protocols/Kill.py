@@ -3,10 +3,6 @@ from models.arp.ARPTable import ARPTable
 from models.util import print_brk, print_command_not_found
 
 class Kill:
-  '''
-    Encapsulates kill protocol's methods.
-    Receipient needs to opt in for kill protocol to be elligible to be killed by sender.
-  '''
   is_killable: bool = True
   
   def show_status(self) -> None:

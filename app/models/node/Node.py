@@ -241,7 +241,7 @@ class Node:
     print(f"DNS query sent to DNS server at prefix {self.dns_server_prefix}.")
 
     # Construct the ICMP packet with the destination IP address and ICMP data
-    icmp_packet = IPPacket(self.node_ip_address, dest_ip, PROTOCOL["ICMP"], icmp_data)
+    icmp_packet = IPPacket(self.node_ip_address,  PROTOCOL["ICMP"])
 
     return icmp_packet
 

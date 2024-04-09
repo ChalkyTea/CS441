@@ -317,7 +317,7 @@ class NetworkInterface:
         if corresponding_ip_address:
           self.destroy_arp_connections(corresponding_ip_address)
           self.routing_table.remove_entire_entry(corresponding_ip_address[:3])
-          self.broadcast_route_remove(ip_address[:3], [])
+          #self.broadcast_route_remove(ip_address[:3], [])
         print(f"Connection terminated. [Completed]")
         print_brk()
         return corresponding_ip_address, corresponding_mac_address # End thread

@@ -44,11 +44,11 @@ class Sniffer:
       print_brk()
 
     print("Commands to configure sniffer:")
-    print("- (s)tatus \t\t Shows if sniffing has been activated.")
-    print("- (d)isable \t\t Disable sniffing.")
-    print("- (e)nable \t\t Enable sniffing.")
-    print("- (e)enable (s)poofing \t Enable DNS spoofing.")
-    print("- (d)disable (s)poofing \t Disable DNS spoofing.")
+    print("- Status \t\t Shows if sniffing has been activated.")
+    print("- Disable \t\t Disable sniffing.")
+    print("- Enable \t\t Enable sniffing.")
+    print("- enablespoofing \t Enable DNS spoofing.")
+    print("- disablespoofing \t Disable DNS spoofing.")
     print_brk()
 
     user_input = input("> ")
@@ -62,10 +62,10 @@ class Sniffer:
     elif user_input == "enable" or user_input == "e":
       self.enable_sniffing()
     
-    elif user_input == "es":
+    elif user_input == "enablespoofing":
       self.enable_dns_spoofing()
     
-    elif user_input == "ds":
+    elif user_input == "disablespoofing":
       self.disable_dns_spoofing()
 
     else:
