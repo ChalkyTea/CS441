@@ -23,21 +23,20 @@ from config import HOST
 
 class Node:
   device_name = None
-  node_ip_address = None # Assigned by router  - See NetworkInterface.receive_node_connection_data()
+  node_ip_address = None # Assigned by router  - See NetworkInterface.nodeConnection()
   node_mac = None
 
-  network_int_address = None
+  network_interface_address = None
   router_interface_address = None
   network_interface_socket = None
 
   arp_table = ARPTable()
   dns_table = None
   dns_server_prefix = None
-  firewall = Firewall() # Can initialise firewall with pre-configured lists if needed
+  firewall = Firewall()
   ping_protocol = Ping()
   kill_protocol = Kill()
   sniffer = Sniffer()
-  #malicious_dns_table = None # Initialize in the config
 
   def __init__(
     self,
@@ -47,19 +46,15 @@ class Node:
     network_int_port: int,
     network_int_host: str = HOST,
     dns_server_prefix: str = None,
-    # dns_records: List = None,
-    # malicious_dns_records: List = None
   ):
     self.device_name = device_name
     self.node_mac = node_mac
-    self.network_int_address = (network_int_host, network_int_port)
+    self.network_interface_address = (network_int_host, network_int_port)
     self.router_interface_address = router_interface_address
     self.network_interface_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    #self.dns_table = DNSTable(dns_records)
     self.dns_server_prefix = dns_server_prefix
-    #self.malicious_dns_table = DNSTable(malicious_dns_records)
 
-  def create_icmp_packet(self, dest_ip: str) -> IPPacket:
+  def ICMP_Packet(self, dest_ip: str) -> IPPacket:
       # Create an ICMP echo request packet
       icmp_data = {
           "type": PROTOCOL["ICMP_TYPE_ECHO_REQUEST"],
@@ -77,7 +72,7 @@ class Node:
 
       return icmp_packet
 
-  def receive_node_connection_data(self):
+  def nodeConnection(self):
     print("Waiting for node connection data")
     assigned_ip_address = None
     router_interface_address = None
@@ -97,7 +92,7 @@ class Node:
     self.node_ip_address = assigned_ip_address
     return self.node_ip_address, router_interface_address
 
-  def response_mac_address(self):
+  def MacAddress(self):
     print("Sending MAC address")
     self.network_interface_socket.send(bytes(f"{self.node_mac}" ,"utf-8"))
     time.sleep(1)
@@ -113,34 +108,19 @@ class Node:
     while not ip_assigned or not mac_provided:
       message = self.network_interface_socket.recv(1024).decode('utf-8')
       if (message == "provide_node_connection_data"):
-        ip_assigned, _ = self.receive_node_connection_data()
+        ip_assigned, _ = self.nodeConnection()
 
       elif (message == "request_mac_address"):
-        mac_provided = self.response_mac_address()
+        mac_provided = self.MacAddress()
 
     print(f"Connection established with router's network interface with MAC of {self.router_interface_address}.")
     print(f"{self.device_name} connection request is completed.")
     print_brk()
     return
 
-  def handle_ethernet_frame(self, ethernet_frame: EthernetFrame, corresponding_socket: socket.socket) -> None:
+  def EthernetFrame(self, ethernet_frame: EthernetFrame, corresponding_socket: socket.socket) -> None:
     if ethernet_frame.is_recipient(self.node_mac):
       print("Intended recipient is retrieving data")
-
-      # if ethernet_frame.data.protocol and ethernet_frame.data.protocol[0] == PROTOCOL["ICMP"]:
-      #           icmp_data = json.loads(ethernet_frame.data.data)
-      #           icmp_type = icmp_data.get('type')
-      #           if icmp_type == '8':  # ICMP echo request
-      #               print("Received ICMP echo request")
-      #               # Prepare and send ICMP echo reply
-      #               icmp_reply_data = {
-      #                   'type': '0',  # ICMP type for echo reply
-      #                   'code': '0',
-      #                   # Other ICMP echo reply data fields as needed
-      #               }
-      #               icmp_reply_packet = IPPacket(ethernet_frame.data.dest_ip, ethernet_frame.data.src_ip, PROTOCOL["ICMP"], icmp_reply_data)
-      #               self.send_ip_packet(icmp_reply_packet, corresponding_socket, has_bottom_break=False)
-      #               return
 
       if ethernet_frame.data.protocol and ethernet_frame.data.protocol[0] == PROTOCOL["PING"]:
         self.ping_protocol.handle_ping(ethernet_frame, corresponding_socket)
@@ -191,56 +171,14 @@ class Node:
     else:
       print("\n")
 
-  def listen(self):
-    while True:
-      try:
-        data = self.network_interface_socket.recv(1024)
-        if not data: # When connection ends from network interface
-          print(f"Connection from router's network interface terminated. {self.device_name} terminated.")
-          self.network_interface_socket.close()
-          os._exit(0)
-        
-        '''
-          Valid payload will always be an ethernet packet.
-            1. Check validity of payload by checking that incoming message from socket has segments.
-            2. If payload valid, load payload data as an EthernetFrame.
-            3. EthernetFrame contains IP packet header data within EthernetFrame.data for firewall/protocols.
-        '''
+  
 
-        payload = data.decode("utf-8")
-        payload_segments = payload.split("|")
-        is_valid_payload = len(payload_segments) > 1
-
-        # Handle and reply to ARP broadcast query here
-        if payload[:10] == "Who has IP":
-          print(payload)
-
-        if is_valid_payload: # Validation checks for ethernet frame data
-          # payload = clean_ethernet_payload(payload)
-          print(f"Ethernet frame received: {payload}")
-          ethernet_frame = EthernetFrame.loads(payload)
-          src_ip = ethernet_frame.data.src_ip
-
-          if not self.firewall.is_disabled() and not self.firewall.is_allowed(src_ip):
-            print(f"Packet from {src_ip} filtered and dropped by firewall.")
-          
-          else:
-            self.handle_ethernet_frame(ethernet_frame, self.network_interface_socket)
-          
-        print_brk()
-
-      except: # Remove this exception to see potential crashes here
-        traceback.print_exc()
-        print(f"{self.device_name} terminated.")
-        return # Should only occur when handle_input receives "quit"
-
-  def send_dns_query(self, address: str) -> str:
+  def send_ICMP_Query(self, address: str) -> str:
     print("Sending DNS query...")
     ip_packet = IPPacket(self.dns_server_prefix + "F", self.node_ip_address, PROTOCOL["DNS_QUERY"], address)
     self.send_ip_packet(ip_packet, self.network_interface_socket)
     print(f"DNS query sent to DNS server at prefix {self.dns_server_prefix}.")
 
-    # Construct the ICMP packet with the destination IP address and ICMP data
     icmp_packet = IPPacket(self.node_ip_address,  PROTOCOL["ICMP"])
 
     return icmp_packet
@@ -255,23 +193,20 @@ class Node:
   #   print("Local DNS cache updated.")
 
   def get_input_address(self) -> str:
-    '''
-      Processes input address from user, resolving domain name locally if possible. Else, resolve domain name based on dns_server_prefix.
-    '''
-    dest_address = input("Enter destination address...\n> ")
+    dest_address = input("Enter destination address\n> ")
     while True:
       if dest_address[:2] == "0x":
         return dest_address
       
       if not is_valid_domain_name(dest_address):
-        dest_address = input("Destination address invalid. Please enter destination address again...\n> ")
-        continue # Continue prompting user
+        dest_address = input("Invalid Destination address. Please enter destination address again:\n> ")
+        continue 
       
       if not self.dns_table.resolve(dest_address):
-        self.send_dns_query(dest_address)
+        self.send_ICMP_Query(dest_address)
       elif self.dns_table.resolve(dest_address)["ip_address"] is None:
-        self.dns_table.remove_record(dest_address) # If previous resolution is None, remove record and try again
-        self.send_dns_query(dest_address)
+        self.dns_table.remove_record(dest_address)
+        self.send_ICMP_Query(dest_address)
       
       dns_query_time_out = 5
       current_time = 2
@@ -300,7 +235,40 @@ class Node:
       print("IP packet sent. [Completed]")
       if has_bottom_break: print_brk()
 
+  def listen(self):
+    while True:
+      try:
+        data = self.network_interface_socket.recv(1024)
+        if not data:
+          print(f"Connection from router's network interface terminated. {self.device_name} terminated.")
+          self.network_interface_socket.close()
+          os._exit(0)
 
+        payload = data.decode("utf-8")
+        payload_segments = payload.split("|")
+        is_valid_payload = len(payload_segments) > 1
+
+        if payload[:10] == "Who has IP":
+          print(payload)
+
+        if is_valid_payload: 
+          print(f"Ethernet frame received: {payload}")
+          ethernet_frame = EthernetFrame.loads(payload)
+          src_ip = ethernet_frame.data.src_ip
+
+          if not self.firewall.is_disabled() and not self.firewall.is_allowed(src_ip):
+            print(f"Packet from {src_ip} filtered and dropped by firewall.")
+          
+          else:
+            self.EthernetFrame(ethernet_frame, self.network_interface_socket)
+          
+        print_brk()
+
+      except:
+        traceback.print_exc()
+        print(f"{self.device_name} terminated.")
+        return
+      
   def handle_input(self):
     while True:
       node_input = input()
@@ -316,7 +284,7 @@ class Node:
             print("Create an ICMP packet by entering the destination IP address...")
             dest_ip = input("Enter destination IP address:\n> ")
             if dest_ip:
-                icmp_packet = self.create_icmp_packet(dest_ip)
+                icmp_packet = self.ICMP_Packet(dest_ip)
                 self.send_ip_packet(icmp_packet, self.network_interface_socket)
             else:
                 print_error()
@@ -399,7 +367,7 @@ class Node:
   def run(self) -> None: 
     print_brk()
     print(f"{self.device_name} connecting to router's network interface with mac {self.node_mac}...")
-    self.network_interface_socket.connect(self.network_int_address)
+    self.network_interface_socket.connect(self.network_interface_address)
     self.node_connection_request()
     try:
       threading.Thread(target = self.listen).start()

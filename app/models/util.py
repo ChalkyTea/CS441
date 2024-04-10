@@ -3,15 +3,9 @@ import re
 from typing import Literal
 
 def encode_data(data: str) -> str:
-  '''
-    Returns encoded string in hexadecimal (string) format.
-  '''
   return ':'.join(f"{ord(ch):02x}" for ch in data)
 
 def decode_data(data: str) -> str:
-  '''
-    Returns decoded hexadecimal (string) in readable (string) format.
-  '''
   return ''.join([chr(int(ch, 16)) for ch in data.split(":")])
 
 def is_valid_domain_name(address: str) -> bool:
@@ -28,7 +22,7 @@ def print_node_help(has_top_break: bool = True):
   if has_top_break:
     print_brk()
 
-  print("Commands:")
+  print("Type these commands to get started:")
   print("- eth \t\t Create an ethernet packet to send.")
   print("- ip \t\t Create an IP packet to send.")
   print("- arp \t\t Display ARP tables.")
@@ -53,34 +47,6 @@ def print_network_int_help(has_top_break: bool = True):
   print("- whoami \t Shows your current ip and mac address.")
   print_brk()
 
-# def print_dns_help(has_top_break: bool = True):
-#   if has_top_break:
-#     print_brk()
-
-#   print("Commands:")
-#   print("- (q)uit \t Terminate DNS.")
-#   print("- (h)elp \t Display command menu.")
-#   print("- dns \t\t Display all DNS records.")
-#   print("- arp \t\t Display all ARP tables.")
-#   print("- whoami \t Bring up current ip and mac address.")
-#   print_brk()
-
-# def print_server_help(has_top_break: bool = True):
-#   if has_top_break:
-#     print_brk()
-
-#   print("Commands:")
-#   print("- (q)uit \t Terminate network interface.")
-#   print("- (h)elp \t Display command menu.")
-#   print("- reconnect \t Attempt to reconnect to failed connections during start up.")
-#   print("- ip route \t Display all routing tables.")
-#   print("- arp \t\t Display all ARP tables.")
-#   print("- arp -n \t Display ARP tables with connected nodes.")
-#   print("- arp -r \t Display ARP tables with connected network interfaces.")
-#   print("- firewall \t Read or configure firewall options.")
-#   print("- whoami \t Bring up current ip and mac address.")
-#   print("- broadcast \t Broadcast an ARP query")
-#   print_brk()
 
 def print_command_not_found(device: Literal["node", "network_interface"]):
   print_brk()
@@ -89,10 +55,7 @@ def print_command_not_found(device: Literal["node", "network_interface"]):
     print_node_help(has_top_break = False)
   elif device == "network_interface":
     print_network_int_help(has_top_break = False)
-  # elif device == "dns":
-  #   print_dns_help(has_top_break = False)
-  # elif device == "server":
-  #   print_server_help(has_top_break = False)
+
 
 def print_error(has_top_break: bool = True):
   if has_top_break:
