@@ -119,11 +119,9 @@ class Node:
     return
 
   def EthernetFrame(self, ethernet_frame: EthernetFrame, corresponding_socket: socket.socket) -> None:
-    if self.mitm_attack.is_attack_active: # for mitm
-        # Check if the source or destination of the frame is one of the victims.
+    if self.mitm_attack.is_attack_active:
         if ethernet_frame.source in ["N1", "N3"] and ethernet_frame.destination in ["N1", "N3"]:
             print(f"MitM: Intercepting and forwarding a frame from {ethernet_frame.source} to {ethernet_frame.destination}")
-            # Here the frame can be modified if necessary before forwarding
             self.mitm_attack.execute_attack(ethernet_frame, corresponding_socket)
     # ---------------------------------------------------------------
 
@@ -363,8 +361,7 @@ class Node:
         print_brk()
 
       elif node_input == "mitm":
-        # Only allow the mitm command if this is the attacker node (Node2)
-        if self.node_mac == "N2":  # Assuming 'N2' is the MAC address of Node2
+        if self.node_mac == "N2":
           self.handle_mitm_attack()
         else:
           print("This command is not recognized on this node.")
