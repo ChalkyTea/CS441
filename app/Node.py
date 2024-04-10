@@ -321,7 +321,9 @@ class Node:
         self.kill_protocol.handle_kill_protocol_input()
 
       elif node_input == "sniff":
-        self.sniffer.handle_sniffer_input()
+        # self.sniffer.handle_sniffer_input()
+        self.sniffer.sniffer()
+
 
       elif node_input == "spoof":
         spoof_ip = input_ip_sequence("Enter the IP address you want to spoof.\n> ")
