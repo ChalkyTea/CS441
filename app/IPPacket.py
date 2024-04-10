@@ -1,6 +1,6 @@
 from __future__ import annotations
 from EthernetFrame import EthernetFrame
-from models.constants import PROTOCOL
+from constants import PROTOCOL
 from util import print_brk
 
 class IPPacket:
