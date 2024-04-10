@@ -3,7 +3,7 @@ import time
 from EthernetFrame import EthernetFrame
 from EthernetData import EthernetData
 from IPPacket import IPPacket
-from models.util import print_brk
+from util import print_brk
 
 class Ping:
   '''

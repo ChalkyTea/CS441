@@ -1,4 +1,4 @@
-from models.node.Node import Node
+from Node import Node
 from config import NODE3_CONFIG
 
 node = Node(**NODE3_CONFIG)

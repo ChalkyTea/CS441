@@ -1,7 +1,7 @@
 from __future__ import annotations
 from EthernetFrame import EthernetFrame
 from models.constants import PROTOCOL
-from models.util import print_brk
+from util import print_brk
 
 class IPPacket:
   destination: str = None

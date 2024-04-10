@@ -1,6 +1,6 @@
 import os
 from models.arp.ARPTable import ARPTable
-from models.util import print_brk, print_command_not_found
+from util import print_brk, print_command_not_found
 
 class Kill:
   is_killable: bool = True

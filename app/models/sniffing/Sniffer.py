@@ -1,4 +1,4 @@
-from models.util import print_brk, print_command_not_found
+from util import print_brk, print_command_not_found
 
 class Sniffer:
   '''

@@ -1,6 +1,6 @@
 from __future__ import annotations
 from EthernetData import EthernetData
-from models.util import print_brk, encode_data, decode_data
+from util import print_brk, encode_data, decode_data
 from models.constants import PROTOCOL
 
 class EthernetFrame:

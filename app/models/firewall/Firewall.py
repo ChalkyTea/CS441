@@ -1,5 +1,5 @@
 from typing import Dict, List
-from models.util import print_brk, print_command_not_found, input_ip_sequence
+from util import print_brk, print_command_not_found, input_ip_sequence
 
 class Firewall:
   '''
