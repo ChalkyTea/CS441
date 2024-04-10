@@ -10,9 +10,9 @@ from IPPacket import IPPacket
 from models.arp.ARPTable import ARPTable
 from models.firewall.Firewall import Firewall
 from models.sniffing.Sniffer import Sniffer
-from models.protocols.Ping import Ping
-from models.protocols.Log import Log
-from models.protocols.Kill import Kill
+from Ping import Ping
+from Log import Log
+from Kill import Kill
 from models.constants import PROTOCOL
 from util import print_brk, print_node_help, print_command_not_found, print_error, input_ip_sequence, is_valid_domain_name
 from config import HOST

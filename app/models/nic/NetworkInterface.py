@@ -3,7 +3,7 @@ import socket
 import time
 import threading
 from models.arp.ARPTable import ARPTable
-from models.routing.RoutingTable import RoutingTable
+from RoutingTable import RoutingTable
 from IPPacket import IPPacket
 from EthernetFrame import EthernetFrame
 from util import print_brk, print_command_not_found, print_network_int_help, clean_ethernet_payload, clean_ip_payload
