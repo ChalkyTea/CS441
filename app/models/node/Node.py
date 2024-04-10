@@ -8,8 +8,6 @@ from typing import List
 from models.payload.EthernetFrame import EthernetFrame
 from models.payload.IPPacket import IPPacket
 from models.arp.ARPTable import ARPTable
-# from models.dns.DNSTable import DNSTable
-# from models.dns.DNSRecord import DNSRecord
 from models.firewall.Firewall import Firewall
 from models.sniffing.Sniffer import Sniffer
 from models.protocols.Ping import Ping
@@ -142,8 +140,6 @@ class Node:
       sniffed_data = ethernet_frame.data.data
       if self.sniffer.is_dns_spoofing:
         try:
-          # format: {"domain_name":..., "ip_address":...}
-          # exception thrown here if is not DNS query
           sniffed_data = json.loads(ethernet_frame.data.data) # type dict
 
           # Capture and check if it is domain name to attack
@@ -182,15 +178,6 @@ class Node:
     icmp_packet = IPPacket(self.node_ip_address,  PROTOCOL["ICMP"])
 
     return icmp_packet
-
-  
-  # def handle_dns_response(self, ethernet_frame: EthernetFrame) -> str:
-  #   dns_query_response = ethernet_frame.data.data
-  #   print(f"DNS query response received of {dns_query_response}.")
-  #   dns_record_data = json.loads(dns_query_response.replace("'",'"'))
-  #   print("Updating local DNS cache...")
-  #   self.dns_table.update_resolution_table(DNSRecord(domain_name=dns_record_data["domain_name"], ip_address=dns_record_data["ip_address"]))
-  #   print("Local DNS cache updated.")
 
   def get_input_address(self) -> str:
     dest_address = input("Enter destination address\n> ")
@@ -318,9 +305,6 @@ class Node:
       elif node_input == "dns":
         print("Displaying all local DNS records...")
         self.dns_table.pprint()
-        # if bool(self.malicious_dns_table.resolution_table):
-        #   print("Displaying malicious DNS records...")
-        #   self.malicious_dns_table.pprint()
         print_brk()
 
       elif node_input == "reply":
@@ -330,7 +314,6 @@ class Node:
         print("ARP response sent.")
         print_brk()
 
-      # Handling input to update and view black or whitelists
       elif node_input == "firewall":
         self.firewall.handle_firewall_input()
 

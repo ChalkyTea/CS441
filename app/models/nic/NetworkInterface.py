@@ -89,12 +89,6 @@ class NetworkInterface:
     return
 
   def node_connection_response(self, corresponding_socket: socket.socket) -> tuple[str, str]:
-    '''
-      Establishes arp tables for socket and mac.
-      1. Provide connection data (assign free IP address and provide network interface MAC address).
-      2. Request Node's MAC address.
-      Returns assigned IP address and MAC of device.
-    '''
     print(f"Node connection request received.")
     print(f"Assigning free IP address")
     assigned_ip_address, _ = self.provide_node_connection_data(corresponding_socket)
@@ -110,10 +104,6 @@ class NetworkInterface:
     return assigned_ip_address, response_mac_address
 
   def broadcast_ethernet_frame_data(self, ethernet_frame: EthernetFrame, is_broadcast_channel: bool = False):
-    '''
-      Emulates effect of ethernet broadcast of payload through socket unicast.
-      If is_broadcast_channel is True, every node of the broadcast is a destination (allows decoding without sniffing).
-    '''
     print("Broadcasting ethernet frame to connected MACs")
     arp_records = self.arp_table.get_all_arp_records()
     for arp_record in arp_records:
@@ -123,11 +113,6 @@ class NetworkInterface:
     print("Ethernet frame broadcasted.")
 
   def route_ip_packet_data(self, ip_packet: IPPacket):
-    '''
-      Emulates IP packet routing to nodes with socket unicast.
-      1. Checks if IP packet has the same prefix as current LAN (broadcast within same LAN)
-      2. If different, checks if same prefix with LANs within conencted interfaces (valid_ips would have one result)
-    '''
     print("Checking IP packet destination")
     ip_prefix = ip_packet.dest_ip_prefix()
     
@@ -153,12 +138,10 @@ class NetworkInterface:
         print("Failed to route IP packet")
 
   def handle_ethernet_frame(self, ethernet_frame: EthernetFrame, corresponding_socket: socket.socket) -> None:
-    # Checks whether frame is query reply, if yes, update ARP table
     if ethernet_frame.destination == self.router_interface_address and ethernet_frame.data.data == "arp_response":
       self.arp_response = True
       print(f"ARP response received, updating ARP table for {self.arp_last_broadcasted_ip}...")
 
-      # Update arp_table_ip_last_updated and set arp_last_broadcasted_ip to None
       self.arp_table.update_arp_table(
         self.arp_last_broadcasted_ip,
         ethernet_frame.source,
@@ -174,11 +157,6 @@ class NetworkInterface:
       self.broadcast_ethernet_frame_data(ethernet_frame)
 
   def handle_ip_packet(self, ip_packet: IPPacket, corresponding_socket: socket.socket) -> None:
-    '''
-      Handles what a network interface does with an IP packet.
-      1. Checks if current network interface is intended recipient (for routing table update)
-      2. If not recipient, route to respective address
-    '''
     payload = ip_packet.dumps()
     print("IP packet received: ", payload)
 
@@ -207,9 +185,6 @@ class NetworkInterface:
 
 
   def listen(self, corresponding_socket: socket.socket, ip_address: str, mac_address: str, config_address: tuple = None):
-    '''
-      Listens to node and broadcasts packet to receipient.
-    '''
     while True:
       try:
         data = corresponding_socket.recv(1024)
@@ -226,7 +201,7 @@ class NetworkInterface:
             self.broadcast_route_remove(ip_address[:3], [])
           print(f"Connection to {mac_address} terminated")
           print_brk()
-          return # End thread
+          return
 
         payload = data.decode("utf-8")
         payload_segments = payload.split("|")
@@ -234,20 +209,16 @@ class NetworkInterface:
 
         if is_valid_payload:
           if payload[:2] != "0x":
-            # payload = clean_ethernet_payload(payload)
             ethernet_frame = EthernetFrame.loads(payload)
             self.handle_ethernet_frame(ethernet_frame, corresponding_socket)
             
           elif payload[:2] == "0x":
-            # payload = clean_ip_payload(payload)
             ip_packet = IPPacket.loads(payload)
             self.handle_ip_packet(ip_packet, corresponding_socket)
         
         print_brk()
 
       except ConnectionResetError as cre:
-        # Raise exception here when node connection closes
-        # For windows OS
         print(f"Connection terminated from IP address of {ip_address} and MAC of {mac_address}.")
         print(f"Closing corresponding connections")
         corresponding_socket.close()
@@ -260,7 +231,7 @@ class NetworkInterface:
           self.broadcast_route_remove(ip_address[:3], [])
         print(f"Connection to {mac_address} terminated")
         print_brk()
-        return # End thread
+        return
 
       except:
         traceback.print_exc()
@@ -295,11 +266,6 @@ class NetworkInterface:
     return ip_received, mac_received, routing_table_dump
   
   def network_int_connection_request(self, corresponding_socket: socket.socket, is_reconnection: bool = False) -> tuple[str, str]:
-    '''
-      Establishes arp tables for socket and mac for network interface that is connecting to another network interface.
-      1. Request for target network interface's IP address.
-      2. Request for target network interface's IP address MAC address.
-    '''
     corresponding_socket.send(bytes("network_int_connection_request", "utf-8"))
     corresponding_ip_address = None
     corresponding_mac_address = None
@@ -363,10 +329,6 @@ class NetworkInterface:
     return True
 
   def broadcast_route_add(self, prefix_to_add: str, cost: int = 0, exclusion_ips: list[str] = []):
-    '''
-      Broadcast message to add IP routes to routing table.
-      exclusion_ips prevent repeated broadcasts.
-    '''
     ip_addresses = self.network_int_arp_table.get_all_ip_addresses()
     broadcast_ips = list(filter(lambda ip_address: (not ip_address in exclusion_ips) and prefix_to_add != ip_address[:3], ip_addresses))
     exclusion_ips.extend(broadcast_ips)
@@ -381,10 +343,6 @@ class NetworkInterface:
       self.network_int_arp_table.get_corresponding_socket(ip_address).send(bytes(ip_packet.dumps(),"utf-8"))
 
   def broadcast_route_remove(self, prefix_to_remove: str, exclusion_ips: list[str] = []):
-    '''
-      Broadcast message to remove IP routes to routing table.
-      exclusion_ips prevent repeated broadcasts.
-    '''
     ip_addresses = self.network_int_arp_table.get_all_ip_addresses()
     broadcast_ips = list(filter(lambda ip_address: (not ip_address in exclusion_ips) and prefix_to_remove != ip_address[:3], ip_addresses))
     exclusion_ips.extend(broadcast_ips)
@@ -399,11 +357,6 @@ class NetworkInterface:
       self.network_int_arp_table.get_corresponding_socket(ip_address).send(bytes(ip_packet.dumps(),"utf-8"))
 
   def network_int_connection_response(self, corresponding_socket: socket.socket) -> tuple[str, str]:
-    '''
-      Establishes arp tables for socket and mac for network interface that is trying to connect to this network interface.
-      1. Provide own IP address.
-      2. Request MAC address.
-    '''
     print(f"Network interface connection request received.")
     print(f"Providing own IP address and MAC... [1/4]")
     self.provide_network_int_connection_data(corresponding_socket)
@@ -428,11 +381,6 @@ class NetworkInterface:
     return connecting_ip_address, connecting_mac
 
   def handle_connection(self, corresponding_socket: socket.socket):
-    '''
-      Started on a seperate thread. 
-      1. Establishes identitifying connection with node/network interface.
-      2. Listens to node indefinitely.
-    '''
     ip_address = None
 
     try:
@@ -449,7 +397,7 @@ class NetworkInterface:
             self.broadcast_route_remove(ip_address[:3], [])
           print(f"Connection terminated. [Completed]")
           print_brk()
-          return # End thread
+          return
 
         message = data.decode("utf-8")
         if message == "node_connection_request":
@@ -466,11 +414,6 @@ class NetworkInterface:
     self.listen(corresponding_socket, ip_address, mac_address)
 
   def handle_network_int_connection(self, corresponding_socket: socket.socket, config_address: tuple, is_reconnection: bool = False) -> None:
-    '''
-      Create connection with other network interfaces.
-      1. Initiates connection for a network interface address.
-      2. Start a thread listen to the new connection if identifying connection established.
-    '''
     ip_address, mac_address = self.network_int_connection_request(corresponding_socket, is_reconnection)
     if ip_address and mac_address:
       threading.Thread(target=self.listen, args=(corresponding_socket, ip_address, mac_address, config_address, )).start()
@@ -551,19 +494,13 @@ class NetworkInterface:
         print_command_not_found(device = "network_interface")
   
   def broadcast_arp_query(self):
-    '''
-      Broadcasts ARP query to look for MAC with the corresponding IP.
-      1. Sends out a broadcast to all hosts within LAN.
-      2. If reply matches, then update MAC table.
-    '''
     self.arp_response = False
-    # 0. Get user input on which IP to get
+
     target_ip = input("What is the IP address of the MAC you wish to get.\n> ")
     self.arp_last_broadcasted_ip = target_ip
     print("Broadcasting ARP query to all nodes in the same LAN...")
     connected_sockets = self.arp_table.get_all_sockets()
     
-    # Broadcast
     while not self.arp_response: 
       try:
         for connected_socket in connected_sockets:
@@ -578,9 +515,6 @@ class NetworkInterface:
         return
 
   def receive_connections(self):
-    '''
-      Receives connections on a separate thread for the lifecycle of the network interface.
-    '''
     self.network_int_socket.listen(self.max_connections)
     while True:
       corresponding_socket, corresponding_address = self.network_int_socket.accept()
