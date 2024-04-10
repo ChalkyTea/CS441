@@ -16,7 +16,7 @@ from Kill import Kill
 from constants import PROTOCOL
 from util import print_brk, print_node_help, print_command_not_found, print_error, input_ip_sequence, is_valid_domain_name
 from config import HOST
-
+from MitMAttack import MitMAttack
 
 
 class Node:
@@ -35,6 +35,7 @@ class Node:
   ping_protocol = Ping()
   kill_protocol = Kill()
   sniffer = Sniffer()
+  mitm_attack = None # for mitm
 
   def __init__(
     self,
@@ -51,6 +52,7 @@ class Node:
     self.router_interface_address = router_interface_address
     self.network_interface_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     self.dns_server_prefix = dns_server_prefix
+    self.mitm_attack = MitMAttack(self) # for mitm
 
   def ICMP_Packet(self, dest_ip: str) -> IPPacket:
       # Create an ICMP echo request packet
@@ -117,6 +119,14 @@ class Node:
     return
 
   def EthernetFrame(self, ethernet_frame: EthernetFrame, corresponding_socket: socket.socket) -> None:
+    if self.mitm_attack.is_attack_active: # for mitm
+        # Check if the source or destination of the frame is one of the victims.
+        if ethernet_frame.source in ["N1", "N3"] and ethernet_frame.destination in ["N1", "N3"]:
+            print(f"MitM: Intercepting and forwarding a frame from {ethernet_frame.source} to {ethernet_frame.destination}")
+            # Here the frame can be modified if necessary before forwarding
+            self.mitm_attack.execute_attack(ethernet_frame, corresponding_socket)
+    # ---------------------------------------------------------------
+
     if ethernet_frame.is_recipient(self.node_mac):
       print("Intended recipient is retrieving data")
 
@@ -256,6 +266,12 @@ class Node:
         print(f"{self.device_name} terminated.")
         return
       
+  # for mitm
+  def handle_mitm_attack(self):
+    self.mitm_attack.arp_poisoning()
+    print(f"ARP poisoning initiated by Node 2")
+    self.mitm_attack.start_attack()
+    
   def input(self):
     while True:
       node_input = input()
@@ -343,6 +359,13 @@ class Node:
         print(f"{self.device_name}'s IP address is {self.node_ip_address}")
         print(f"{self.device_name}'s MAC address is {self.node_mac}")
         print_brk()
+
+      elif node_input == "mitm":
+        # Only allow the mitm command if this is the attacker node (Node2)
+        if self.node_mac == "N2":  # Assuming 'N2' is the MAC address of Node2
+          self.handle_mitm_attack()
+        else:
+          print("This command is not recognized on this node.")
 
       else:
         print_command_not_found(device = "node")
