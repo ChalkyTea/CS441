@@ -2,7 +2,7 @@ import os
 import socket
 import time
 import threading
-from models.arp.ARPTable import ARPTable
+from ARPTable import ARPTable
 from RoutingTable import RoutingTable
 from IPPacket import IPPacket
 from EthernetFrame import EthernetFrame

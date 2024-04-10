@@ -7,8 +7,8 @@ import json
 from typing import List
 from EthernetFrame import EthernetFrame
 from IPPacket import IPPacket
-from models.arp.ARPTable import ARPTable
-from models.firewall.Firewall import Firewall
+from ARPTable import ARPTable
+from Firewall import Firewall
 from Sniffer import Sniffer
 from Ping import Ping
 from Log import Log

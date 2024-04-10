@@ -1,5 +1,5 @@
 import os
-from models.arp.ARPTable import ARPTable
+from ARPTable import ARPTable
 from util import print_brk, print_command_not_found
 
 class Kill:

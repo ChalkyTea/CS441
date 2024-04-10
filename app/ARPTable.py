@@ -1,7 +1,7 @@
 from typing import Dict, TypedDict, Union, List
 import socket
 import json
-from .ARPRecord import ARPRecord
+from ARPRecord import ARPRecord
 
 class ARPTable:
   arp_table: Dict[str, ARPRecord] = None
