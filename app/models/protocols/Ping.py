@@ -1,8 +1,8 @@
 import socket
 import time
-from models.payload.EthernetFrame import EthernetFrame
-from models.payload.EthernetData import EthernetData
-from models.payload.IPPacket import IPPacket
+from EthernetFrame import EthernetFrame
+from EthernetData import EthernetData
+from IPPacket import IPPacket
 from models.util import print_brk
 
 class Ping:

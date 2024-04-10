@@ -5,8 +5,8 @@ import threading
 import traceback
 import json
 from typing import List
-from models.payload.EthernetFrame import EthernetFrame
-from models.payload.IPPacket import IPPacket
+from EthernetFrame import EthernetFrame
+from IPPacket import IPPacket
 from models.arp.ARPTable import ARPTable
 from models.firewall.Firewall import Firewall
 from models.sniffing.Sniffer import Sniffer

@@ -4,8 +4,8 @@ import time
 import threading
 from models.arp.ARPTable import ARPTable
 from models.routing.RoutingTable import RoutingTable
-from models.payload.IPPacket import IPPacket
-from models.payload.EthernetFrame import EthernetFrame
+from IPPacket import IPPacket
+from EthernetFrame import EthernetFrame
 from models.util import print_brk, print_command_not_found, print_network_int_help, clean_ethernet_payload, clean_ip_payload
 from models.constants import PROTOCOL
 from config import HOST

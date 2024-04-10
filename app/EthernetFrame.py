@@ -1,5 +1,5 @@
 from __future__ import annotations
-from models.payload.EthernetData import EthernetData
+from EthernetData import EthernetData
 from models.util import print_brk, encode_data, decode_data
 from models.constants import PROTOCOL
 

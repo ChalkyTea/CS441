@@ -1,5 +1,5 @@
 from __future__ import annotations
-from models.payload.EthernetFrame import EthernetFrame
+from EthernetFrame import EthernetFrame
 from models.constants import PROTOCOL
 from models.util import print_brk
 

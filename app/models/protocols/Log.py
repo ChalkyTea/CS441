@@ -2,7 +2,7 @@ import os
 import pathlib
 import logging
 from datetime import datetime
-from models.payload.EthernetFrame import EthernetFrame
+from EthernetFrame import EthernetFrame
 
 class Log:
   '''
