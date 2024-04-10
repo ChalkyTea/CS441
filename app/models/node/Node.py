@@ -256,7 +256,7 @@ class Node:
         print(f"{self.device_name} terminated.")
         return
       
-  def handle_input(self):
+  def input(self):
     while True:
       node_input = input()
       if node_input == "quit" or node_input == "q":
@@ -355,7 +355,7 @@ class Node:
     try:
       threading.Thread(target = self.listen).start()
       print_node_help(False)
-      self.handle_input()
+      self.input()
 
     except KeyboardInterrupt:
       self.network_interface_socket.close()
