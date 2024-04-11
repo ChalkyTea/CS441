@@ -188,3 +188,10 @@ A firewall monitors incoming and outgoing network traffic and decides whether to
     What is the value of the IP you wish to add to blacklist?
     > 0x2A
     IP 0x2A successfully added to blacklist.
+
+6) ARP Spoofing
+Starts an ARP spoofing attack with node 2 as the attacker. Not fully functional yet but in theory node 2 send false ARP replies to the LAN and tries to associate the IP address of node 1 and 3 with the MAC address of node 2.
+
+1. Type "arpspoof" into node 2's command line and wait for it to the arp poisoning attack to finish
+
+2. Then try to send an ethernet frame from node 1 to node 3
