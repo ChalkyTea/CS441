@@ -4,7 +4,7 @@ from EthernetFrame import EthernetFrame
 from IPPacket import IPPacket
 from ARPTable import ARPTable
 
-class MitMAttack:
+class ARPSpoofing:
     def __init__(self, attacker_node):
         self.attacker_node = attacker_node
         self.is_attack_active = False
@@ -12,7 +12,7 @@ class MitMAttack:
 
     def start_attack(self):
         self.is_attack_active = True
-        print(f"MitM attack initiated")
+        print(f"ARP Spoofing attack initiated")
 
     def intercept_packet(self, ethernet_frame: EthernetFrame):
         if self.is_attack_active:
