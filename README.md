@@ -1,5 +1,4 @@
-# CS441
-CS441 Network Security Project - Python Network Emulator
+# CS441 Project - Network Emulator
 
 # Getting Started 
 > While connecting the nodes and routers interfaces, please wait for a few seconds for the connection to be done before proceeding to connect another node.
